@@ -108,68 +108,91 @@
       </aside>
     </div>
     <script>
-      // --- PWA Service Worker 註冊碼 (保留) ---
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", function () {
-          navigator.serviceWorker.register("/sw.js").then(
-            function (registration) {
-              console.log(
-                "ServiceWorker registration successful: ",
-                registration.scope
-              );
-            },
-            function (err) {
-              console.log("ServiceWorker registration failed: ", err);
-            }
-          );
-        });
+     // --- PWA Service Worker 註冊碼 (保留) ---
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("/sw.js").then(
+      function (registration) {
+        console.log(
+          "ServiceWorker registration successful: ",
+          registration.scope
+        );
+      },
+      function (err) {
+        console.log("ServiceWorker registration failed: ", err);
       }
-      // --- 選單展開/收合功能 (手風琴效果) ---
-      const menuItems = document.querySelectorAll(".has-submenu");
-      menuItems.forEach((item) => {
-        item.addEventListener("click", function (event) {
-          event.stopPropagation();
-          menuItems.forEach((otherItem) => {
-            if (otherItem !== this) {
-              otherItem.classList.remove("active");
-            }
-          });
-          this.classList.toggle("active");
-        });
-      });
+    );
+  });
+}
 
-      // --- 圖片切換功能 (綁定到縮圖圖片) ---
+// --- 選單展開/收合功能 (手風琴效果) ---
+const menuItems = document.querySelectorAll(".has-submenu");
+menuItems.forEach((item) => {
+  item.addEventListener("click", function (event) {
+    event.stopPropagation();
+    menuItems.forEach((otherItem) => {
+      if (otherItem !== this) {
+        otherItem.classList.remove("active");
+      }
+    });
+    this.classList.toggle("active");
+  });
+});
 
-      // 1. 獲取對應的圖層元素
-      const topLayer = document.getElementById("top-layer");
-      const bottomLayer = document.getElementById("bottom-layer");
+// --- 圖片疊加/移除功能 (依點擊順序決定 z-index，再次點擊取消) ---
 
-      // 2. 獲取所有可點擊的衣物縮圖圖片 (使用 .item-img class)
-      const itemImages = document.querySelectorAll(".item-img");
+const modelContainer = document.querySelector(".model-container");
 
-      itemImages.forEach((imgElement) => {
-        // 將事件綁定在 img 標籤本身
-        imgElement.addEventListener("click", function (event) {
-          event.stopPropagation();
+// 使用 WeakMap 來追蹤哪個縮圖對應哪個預覽圖元素
+const itemToImageMap = new WeakMap();
 
-          // 從點擊的 img 標籤讀取資料
-          const imgUrl = this.getAttribute("data-img");
-          const dataType = this.getAttribute("data-type");
+// 用於確保圖層順序正確
+let zIndexCounter = 1;
 
-          if (imgUrl && dataType) {
-            if (dataType === "top") {
-              // 更新上身圖層的圖片來源並顯示
-              topLayer.src = imgUrl;
-              topLayer.style.display = "block";
-            } else if (dataType === "bottom") {
-              // 更新下身圖層的圖片來源並顯示
-              bottomLayer.src = imgUrl;
-              bottomLayer.style.display = "block";
-            }
-            // 可以繼續增加其他 dataType (例如: 'coat', 'shoes')
-          }
-        });
-      });
+// 獲取所有可點擊的衣物縮圖圖片 (使用 .item-img class)
+const itemImages = document.querySelectorAll(".item-img");
+
+itemImages.forEach((imgElement) => {
+  imgElement.addEventListener("click", function (event) {
+    event.stopPropagation();
+
+    const imgUrl = this.getAttribute("data-img");
+
+    if (!imgUrl) return;
+
+    // 檢查這張縮圖是否已經在預覽區顯示了對應的圖片
+    if (itemToImageMap.has(this)) {
+      // 情況 A: 已經存在，執行取消/移除操作
+
+      const existingImg = itemToImageMap.get(this);
+      // 從 DOM 中移除圖片元素
+      modelContainer.removeChild(existingImg);
+      // 從 Map 中移除綁定記錄
+      itemToImageMap.delete(this); 
+      // 移除視覺反饋 class (如果有的話)
+      this.classList.remove("selected-item"); 
+
+    } else {
+      // 情況 B: 尚未存在，執行新增/疊加操作
+
+      // 創建一個新的圖片元素
+      const newImg = document.createElement("img");
+      newImg.src = imgUrl;
+      newImg.classList.add("layer-img"); // 沿用 CSS 樣式
+      
+      // 設置 z-index，確保後點擊的疊在上面
+      newImg.style.zIndex = zIndexCounter++;
+
+      // 將新圖片加入到 model-container 裡面
+      modelContainer.appendChild(newImg);
+      // 將縮圖元素 (this) 與新圖片元素綁定起來
+      itemToImageMap.set(this, newImg);
+      // 添加視覺反饋 class (例如加個邊框表示已選中)
+      this.classList.add("selected-item");
+    }
+  });
+});
     </script>
   </body>
 </html>
+
