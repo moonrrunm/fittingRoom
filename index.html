@@ -25,40 +25,57 @@
             class="layer-img"
             style="z-index: 0"
           />
+          <img
+            id="top-layer"
+            src=""
+            alt="上衣"
+            class="layer-img"
+            style="z-index: 1; display: none"
+          />
+          <img
+            id="bottom-layer"
+            src=""
+            alt="下身"
+            class="layer-img"
+            style="z-index: 1; display: none"
+          />
         </div>
       </section>
       <aside>
         <h3>衣服類型</h3>
         <ul>
           <li class="has-submenu">
-             上身
+            上身
             <ul class="submenu">
-              <li
-                data-type="top"
-                data-img="clothes/tshirt.png"
-                data-thumb="clothes/tshirt_thumb.png"
-              ></li>
+              <li>
+                <!-- 將所有 data-* 屬性移到 img 上 -->
+                <img
+                  src="clothes/tshirt_thumb.png"
+                  alt="短袖 T-Shirt"
+                  class="item-img"
+                  data-type="top"
+                  data-img="clothes/tshirt.png"
+                />
+                <!-- 您也可以在圖片下方增加文字說明 -->
+                <span>短袖 T-Shirt</span>
+              </li>
             </ul>
           </li>
 
           <li class="has-submenu">
             下身
             <ul class="submenu">
-              <li
-                data-type="bottom"
-                data-img="clothes/skirt.png"
-                data-thumb="clothes/skirt_thumb.png"
-              ></li>
-            </ul>
-          </li>
-
-          <li class="has-submenu">
-            下身
-            <ul class="submenu">
-              <li>短褲</li>
-              <li>長褲</li>
-              <li>裙子</li>
-              <li>牛仔</li>
+              <li>
+                <!-- 將所有 data-* 屬性移到 img 上 -->
+                <img
+                  src="clothes/skirt_thumb.png"
+                  alt="短裙 Skirt"
+                  class="item-img"
+                  data-type="bottom"
+                  data-img="clothes/skirt.png"
+                />
+                <span>短裙 Skirt</span>
+              </li>
             </ul>
           </li>
           <li class="has-submenu">
@@ -107,7 +124,6 @@
           );
         });
       }
-
       // --- 選單展開/收合功能 (手風琴效果) ---
       const menuItems = document.querySelectorAll(".has-submenu");
       menuItems.forEach((item) => {
@@ -122,46 +138,38 @@
         });
       });
 
-      // --- 圖片疊加/移除功能 (依點擊順序決定 z-index，僅再次點擊可取消) ---
-      const modelContainer = document.querySelector(".model-container");
-      const allMenuItems = document.querySelectorAll("aside li[data-img]");
+      // --- 圖片切換功能 (綁定到縮圖圖片) ---
 
-      // 使用一個 WeakMap 來將選單的 LI 元素與其對應的圖片元素綁定起來
-      const itemToImageMap = new WeakMap();
+      // 1. 獲取對應的圖層元素
+      const topLayer = document.getElementById("top-layer");
+      const bottomLayer = document.getElementById("bottom-layer");
 
-      // 用一個計數器來決定 z-index，從 1 開始，因為 0 留給背景模型
-      let zIndexCounter = 1;
+      // 2. 獲取所有可點擊的衣物縮圖圖片 (使用 .item-img class)
+      const itemImages = document.querySelectorAll(".item-img");
 
-      allMenuItems.forEach((menuItem) => {
-        menuItem.addEventListener("click", function (event) {
+      itemImages.forEach((imgElement) => {
+        // 將事件綁定在 img 標籤本身
+        imgElement.addEventListener("click", function (event) {
           event.stopPropagation();
+
+          // 從點擊的 img 標籤讀取資料
           const imgUrl = this.getAttribute("data-img");
+          const dataType = this.getAttribute("data-type");
 
-          if (!imgUrl) return;
-
-          // 檢查這個特定的選單項目 (this) 是否已經被點擊並產生了圖片
-          if (itemToImageMap.has(this)) {
-            // 如果已經存在，表示使用者想取消它
-            const existingImg = itemToImageMap.get(this);
-            modelContainer.removeChild(existingImg);
-            itemToImageMap.delete(this); // 從 Map 中移除綁定
-            this.classList.remove("selected"); // 移除視覺反饋
-          } else {
-            // 如果是第一次點擊，則創建新的圖片元素並添加
-            const newImg = document.createElement("img");
-            newImg.src = imgUrl;
-            newImg.classList.add("layer-img");
-
-            // 根據目前的計數器設置 z-index，實現後點擊後疊加的效果
-            newImg.style.zIndex = zIndexCounter++;
-
-            modelContainer.appendChild(newImg);
-            itemToImageMap.set(this, newImg); // 將 LI 元素與新圖片綁定
-            this.classList.add("selected"); // 為當前點擊的選項添加視覺反饋
+          if (imgUrl && dataType) {
+            if (dataType === "top") {
+              // 更新上身圖層的圖片來源並顯示
+              topLayer.src = imgUrl;
+              topLayer.style.display = "block";
+            } else if (dataType === "bottom") {
+              // 更新下身圖層的圖片來源並顯示
+              bottomLayer.src = imgUrl;
+              bottomLayer.style.display = "block";
+            }
+            // 可以繼續增加其他 dataType (例如: 'coat', 'shoes')
           }
         });
       });
     </script>
   </body>
 </html>
-
