@@ -83,12 +83,13 @@ aside li {
   /*active後面有空格*/
   display: block;
 }
-/*子選單裡的縮圖*/
+/* 讓滑鼠移到縮圖上時顯示手指圖示 */
 .item-img {
-  width: 50px; /* 縮圖寬度 */
+  cursor: pointer;
+  /* 確保尺寸設定在這裡生效 */
+  width: 50px;
   height: auto;
-  cursor: pointer; /* 讓滑鼠移上去時顯示手指圖示，表示可以點擊 */
-  margin-left: 10px;
+  margin-right: 5px; /* 圖片與文字間隔 */
 }
 /*讓圖層容器相對於自己定位*/
 .model-container {
