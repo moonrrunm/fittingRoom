@@ -1,0 +1,140 @@
+/*初始化*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/*全域設定*/
+body {
+  font-family: Arial, "Huninn", "Zen Antique", sans-serif;
+  line-height: 1.5; /*當前設定字型*1.5*/
+  background-color: #fff;
+  color: #000000;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+/*彈性容器,使用在主內容(預覽區)*/
+#flctn {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /*子元素水平置中*/
+  align-items: center; /*子元素垂直置中*/
+  width: 90%;
+  background: radial-gradient(
+    circle closest-side,
+    #c7c7c7 0%,
+    #e0e0e0 30%,
+    #fff 100%
+  );
+}
+/*首頁設定*/
+header {
+  width: 100%;
+  height: 80px;
+  background-color: #ffffff;
+  border-bottom: 2px solid #000000;
+  border-top: 2px solid #000000;
+  display: flex;
+  /*word-wrap: break-word;
+  overflow-wrap: break-word;*/
+  justify-content: center;
+  align-items: center;
+  color: #000;
+  padding: 10px;
+}
+/*預覽畫面跟側邊選單版面調整*/
+.main-content {
+  display: flex;
+  flex: 1; /* 讓這個容器填滿 header 以外的剩餘垂直空間 */
+  width: 100%;
+}
+/*預覽畫面設定*/
+section {
+  background-color: #fff;
+}
+/*右側欄位設定*/
+aside {
+  width: 20%;
+  background-color: #fff;
+  padding: 10px;
+}
+/*右側選單*/
+aside ul {
+  margin: 0; /* 移除外距 */
+  padding: 0; /* 移除內距 */
+  list-style-position: inside; /* 將點移到 li 元素的內部 */
+}
+/*右側選單*/
+aside li {
+  list-style-type: disc;
+  margin: 0;
+  padding: 5px 0; /* 可以加一點上下內距讓項目分開 */
+}
+/*隱藏子選單*/
+.submenu {
+  display: none;
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: none;
+}
+/*父選單被點擊後底下隱藏的子選單會顯示*/
+.has-submenu.active .submenu {
+  /*active後面有空格*/
+  display: block;
+}
+/*子選單裡的縮圖*/
+.item-img {
+  width: 50px; /* 縮圖寬度 */
+  height: auto;
+  cursor: pointer; /* 讓滑鼠移上去時顯示手指圖示，表示可以點擊 */
+  margin-left: 10px;
+}
+/*讓圖層容器相對於自己定位*/
+.model-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  aspect-ratio: 1/1.5;
+}
+/*所有圖層的基礎樣式*/
+.layer-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* 確保所有圖片寬度一致 */
+  height: auto;
+  /* 過渡效果讓穿脫更順暢 */
+  transition: opacity 0.3s ease-in-out;
+}
+/*改標題字型*/
+h1,
+h3 {
+  font-family: "Zen Antique";
+}
+/* *** 行動裝置 App 模式響應式調整 (Media Query) *** */
+@media (max-width: 768px) {
+  .main-content {
+    /* 在小螢幕上，讓預覽區和側邊欄垂直堆疊 */
+    flex-direction: column;
+  }
+
+  #flctn {
+    /* 預覽區佔滿行動裝置寬度 */
+    width: 100%;
+    min-height: 60vh; /* 確保預覽區有足夠的高度 */
+  }
+
+  aside {
+    /* 側邊欄變成底部的選單，佔滿全寬 */
+    width: 100%;
+    max-height: 40vh; /* 限制高度，防止佔滿全螢幕 */
+    border-top: 1px solid #ccc;
+    overflow-y: auto; /* 允許選單內容滾動 */
+  }
+
+  header {
+    height: 60px; /* App 標題列通常較矮 */
+  }
+}

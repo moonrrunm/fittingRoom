@@ -1,0 +1,21 @@
+{
+  "name": "線上試衣間",
+  "short_name": "試衣間App",
+  "description": "一個可以虛擬試穿衣物的線上應用程式。",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#e9c2d5",
+  "icons": [
+    {
+      "src": "clothes/clo1.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "clothes/flo1.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

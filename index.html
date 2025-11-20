@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>線上試衣間</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Huninn&family=Zen+Antique&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="subject.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body>
+    <header><h1>線上試衣間</h1></header>
+    <div class="main-content">
+      <section id="flctn">
+        <div class="model-container">
+          <img
+            id="base-model"
+            src="clothes/model.png"
+            alt="模特兒模型"
+            class="layer-img"
+            style="z-index: 0"
+          />
+        </div>
+      </section>
+      <aside>
+        <h3>衣服類型</h3>
+        <ul>
+          <li class="has-submenu">
+            上身
+            <ul class="submenu">
+              <li
+                data-type="top"
+                data-img="clothes/tshirt.png"
+                data-thumb="clothes/tshirt_thumb.png"
+              >
+                短袖
+                <img
+                  src="縮圖圖片路徑"
+                  alt="短袖(圖片無法載入時)"
+                  class="item-img"
+                />
+              </li>
+
+              <li>背心</li>
+              <li>長袖</li>
+              <li>襯衫</li>
+            </ul>
+          </li>
+
+          <li class="has-submenu">
+            下身
+            <ul class="submenu">
+              <li>短褲</li>
+              <li>長褲</li>
+              <li>裙子</li>
+              <li>牛仔</li>
+            </ul>
+          </li>
+          <li class="has-submenu">
+            外套
+            <ul class="submenu">
+              <li>休閒外套</li>
+              <li>針織外套</li>
+              <li>罩衫</li>
+              <li>背心</li>
+            </ul>
+          </li>
+          <li class="has-submenu">
+            鞋子
+            <ul class="submenu">
+              <li>休閒鞋</li>
+              <li>跟鞋</li>
+              <li>涼鞋</li>
+              <li>靴子</li>
+            </ul>
+          </li>
+          <li class="has-submenu">
+            配件
+            <ul class="submenu">
+              <li>帽子</li>
+              <li>項鍊</li>
+              <li>包包</li>
+            </ul>
+          </li>
+        </ul>
+      </aside>
+    </div>
+    <script>
+      // --- PWA Service Worker 註冊碼 (保留) ---
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("/sw.js").then(
+            function (registration) {
+              console.log(
+                "ServiceWorker registration successful: ",
+                registration.scope
+              );
+            },
+            function (err) {
+              console.log("ServiceWorker registration failed: ", err);
+            }
+          );
+        });
+      }
+
+      // --- 選單展開/收合功能 (手風琴效果) ---
+      const menuItems = document.querySelectorAll(".has-submenu");
+      menuItems.forEach((item) => {
+        item.addEventListener("click", function (event) {
+          event.stopPropagation();
+          menuItems.forEach((otherItem) => {
+            if (otherItem !== this) {
+              otherItem.classList.remove("active");
+            }
+          });
+          this.classList.toggle("active");
+        });
+      });
+
+      // --- 圖片疊加/移除功能 (依點擊順序決定 z-index，僅再次點擊可取消) ---
+      const modelContainer = document.querySelector(".model-container");
+      const allMenuItems = document.querySelectorAll("aside li[data-img]");
+
+      // 使用一個 WeakMap 來將選單的 LI 元素與其對應的圖片元素綁定起來
+      const itemToImageMap = new WeakMap();
+
+      // 用一個計數器來決定 z-index，從 1 開始，因為 0 留給背景模型
+      let zIndexCounter = 1;
+
+      allMenuItems.forEach((menuItem) => {
+        menuItem.addEventListener("click", function (event) {
+          event.stopPropagation();
+          const imgUrl = this.getAttribute("data-img");
+
+          if (!imgUrl) return;
+
+          // 檢查這個特定的選單項目 (this) 是否已經被點擊並產生了圖片
+          if (itemToImageMap.has(this)) {
+            // 如果已經存在，表示使用者想取消它
+            const existingImg = itemToImageMap.get(this);
+            modelContainer.removeChild(existingImg);
+            itemToImageMap.delete(this); // 從 Map 中移除綁定
+            this.classList.remove("selected"); // 移除視覺反饋
+          } else {
+            // 如果是第一次點擊，則創建新的圖片元素並添加
+            const newImg = document.createElement("img");
+            newImg.src = imgUrl;
+            newImg.classList.add("layer-img");
+
+            // 根據目前的計數器設置 z-index，實現後點擊後疊加的效果
+            newImg.style.zIndex = zIndexCounter++;
+
+            modelContainer.appendChild(newImg);
+            itemToImageMap.set(this, newImg); // 將 LI 元素與新圖片綁定
+            this.classList.add("selected"); // 為當前點擊的選項添加視覺反饋
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
