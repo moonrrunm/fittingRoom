@@ -2,7 +2,7 @@
   "name": "線上試衣間",
   "short_name": "試衣間App",
   "description": "一個可以虛擬試穿衣物的線上應用程式。",
-  "start_url": "/index.html",
+  "start_url": "/fittingRoom/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
@@ -19,4 +19,3 @@
     }
   ]
 }
-
